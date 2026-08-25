@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.routers import aggregates
+from app.routers import aggregates, patterns
 
 app = FastAPI(
     title="Urban SDK Traffic Analytics API",
@@ -9,6 +9,7 @@ app = FastAPI(
 )
 
 app.include_router(aggregates.router)
+app.include_router(patterns.router)
 
 
 @app.get("/health", tags=["health"])
