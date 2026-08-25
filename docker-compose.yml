@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: urban_sdk_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-urbansdk}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-urbansdk}
+      POSTGRES_DB: ${POSTGRES_DB:-urbansdk}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-urbansdk} -d ${POSTGRES_DB:-urbansdk}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
