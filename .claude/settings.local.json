@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/abdullah/Documents/Code/Urban-SDK-Test rev-parse --is-inside-work-tree)",
+      "Bash(git -C /Users/abdullah/Documents/Code rev-parse --is-inside-work-tree)",
+      "Bash(git config *)",
+      "Read(//Users/abdullah/Documents/Code/**)",
+      "Bash(echo *)",
+      "Bash(gh api *)",
+      "Bash(gh auth *)",
+      "Bash(git ls-remote *)"
+    ]
+  }
+}
