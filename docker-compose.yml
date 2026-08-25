@@ -17,5 +17,15 @@ services:
       timeout: 5s
       retries: 10
 
+  # Web-based DB browser for local dev
+  adminer:
+    image: adminer:4
+    container_name: urban_sdk_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
 volumes:
   pgdata:
