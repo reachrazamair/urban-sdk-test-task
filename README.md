@@ -15,9 +15,88 @@ notebook for Mapbox visualization.
 - **Notebook** — pulls aggregated data from the API and renders it on a
   Mapbox choropleth, colored by average speed.
 - **Architecture** — diagram of the ingestion → storage → API → visualization
-  flow.
+  flow (below).
 
-## Status
+## Architecture
 
-Work in progress — implementation details, setup instructions, and the
-architecture diagram will land here as the service is built out.
+![Architecture diagram](docs/architecture.svg)
+
+1. **Source data** — two Parquet files on Urban SDK's CDN: road segment
+   metadata/geometry (`link_info`) and hourly speed observations for Duval
+   County on 2024-01-01 (`duval_jan1_2024`).
+2. **Ingestion** (`app/ingestion/load_data.py`) — downloads both files,
+   parses them with pandas/shapely, and bulk-loads them into Postgres.
+   Truncate-and-reload, so it's safe to re-run.
+3. **Storage** — PostgreSQL 16 + PostGIS 3.4 (via `docker-compose.yml`),
+   holding the `links` and `speed_records` tables. Adminer runs alongside
+   for local DB browsing at `localhost:8080`.
+4. **API** (`app/main.py` + `app/routers/`) — FastAPI service, async
+   SQLAlchemy ORM over `asyncpg`, exposing the four endpoints below at
+   `localhost:8000`.
+5. **Visualization** (`notebooks/visualization.ipynb`) — calls the API with
+   `requests` and renders the returned GeoJSON as a Mapbox choropleth
+   colored by `average_speed`.
+
+## Setup
+
+Requires [`uv`](https://docs.astral.sh/uv/getting-started/installation/) and
+Docker.
+
+```bash
+./.setup.sh
+```
+
+This copies `.env.example` → `.env`, installs dependencies, starts
+Postgres/PostGIS, and creates the schema. Then load the data and start the
+API:
+
+```bash
+uv run python -m app.ingestion.load_data   # downloads + loads the datasets (~2M rows)
+uv run uvicorn app.main:app --reload       # API at http://localhost:8000
+```
+
+Interactive API docs: `http://localhost:8000/docs`.
+
+To run the notebook, add a [Mapbox token](https://mapbox.com) to `.env`
+(`MAPBOX_TOKEN=...`), then:
+
+```bash
+uv sync --group notebook
+uv run jupyter lab notebooks/visualization.ipynb
+```
+
+## API reference
+
+All endpoints accept `day` as a day name (e.g. `"Wednesday"`) and `period`
+as a time-of-day name (e.g. `"AM Peak"`) or numeric id 1–7 — see
+`app/constants.py` for the full period table.
+
+| Endpoint | Method | Params | Returns |
+|---|---|---|---|
+| `/aggregates/` | GET | `day`, `period` | Average speed per link for that day/period |
+| `/aggregates/{link_id}` | GET | `day`, `period` | Speed + metadata for one link |
+| `/aggregates/spatial_filter/` | POST | body: `day`, `period`, `bbox` | Links intersecting a `[min_lon, min_lat, max_lon, max_lat]` box |
+| `/patterns/slow_links/` | GET | `period`, `threshold`, `min_days` | Links averaging below `threshold` mph on ≥ `min_days` distinct days |
+
+## Project layout
+
+```
+app/
+  main.py            FastAPI app + router registration
+  models.py           SQLAlchemy ORM models (Link, SpeedRecord)
+  database.py          Async engine/session setup
+  config.py             Settings (.env)
+  constants.py           Day/period encodings
+  params.py                Query-param parsing shared by routers
+  routers/
+    aggregates.py           /aggregates/*
+    patterns.py              /patterns/*
+  ingestion/
+    load_data.py               Downloads + loads the two datasets
+scripts/
+  init_db.py           Creates the PostGIS extension + ORM tables
+notebooks/
+  visualization.ipynb    Mapbox visualization
+docs/
+  architecture.svg         Architecture diagram
+```

@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 620" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4b5563"/>
+    </marker>
+    <marker id="arrowDashed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1280" height="620" fill="#ffffff"/>
+
+  <text x="640" y="34" text-anchor="middle" font-size="20" font-weight="700" fill="#111827">Urban SDK Traffic Analytics — Architecture</text>
+  <text x="640" y="56" text-anchor="middle" font-size="13" fill="#6b7280">Ingestion → Storage → API → Visualization</text>
+
+  <!-- 1. Source data -->
+  <g>
+    <rect x="20" y="110" width="190" height="140" rx="10" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="115" y="136" text-anchor="middle" font-size="13" font-weight="700" fill="#3730a3">1. Source data</text>
+    <text x="115" y="136" text-anchor="middle" font-size="13" font-weight="700" fill="#3730a3" dy="0"></text>
+    <text x="35" y="160" font-size="11" fill="#374151">Urban SDK CDN</text>
+    <text x="35" y="180" font-size="11" fill="#374151">• link_info.parquet.gz</text>
+    <text x="35" y="198" font-size="11" fill="#374151">  (~100k road segments)</text>
+    <text x="35" y="220" font-size="11" fill="#374151">• duval_jan1_2024.parquet.gz</text>
+    <text x="35" y="238" font-size="11" fill="#374151">  (~1.2M speed readings)</text>
+  </g>
+
+  <!-- arrow 1->2 -->
+  <line x1="212" y1="180" x2="256" y2="180" stroke="#4b5563" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="234" y="168" text-anchor="middle" font-size="10" fill="#4b5563">download</text>
+  <text x="234" y="200" text-anchor="middle" font-size="10" fill="#4b5563">(httpx)</text>
+
+  <!-- 2. Ingestion -->
+  <g>
+    <rect x="258" y="105" width="200" height="150" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+    <text x="358" y="131" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">2. Ingestion</text>
+    <text x="273" y="154" font-size="11" fill="#374151">app/ingestion/</text>
+    <text x="273" y="170" font-size="11" fill="#374151">  load_data.py</text>
+    <text x="273" y="194" font-size="11" fill="#374151">Parses Parquet → rows,</text>
+    <text x="273" y="210" font-size="11" fill="#374151">builds PostGIS geometry</text>
+    <text x="273" y="226" font-size="11" fill="#374151">(shapely), bulk-inserts via</text>
+    <text x="273" y="242" font-size="11" fill="#374151">SQLAlchemy Core. Idempotent.</text>
+  </g>
+
+  <!-- arrow 2->3 -->
+  <line x1="460" y1="180" x2="504" y2="180" stroke="#4b5563" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="482" y="168" text-anchor="middle" font-size="10" fill="#4b5563">bulk insert</text>
+
+  <!-- 3. Storage -->
+  <g>
+    <rect x="506" y="90" width="220" height="180" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="616" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">3. Storage</text>
+    <text x="521" y="139" font-size="11" fill="#374151">PostgreSQL 16 + PostGIS 3.4</text>
+    <text x="521" y="155" font-size="11" fill="#374151">(docker-compose, container</text>
+    <text x="521" y="169" font-size="11" fill="#374151">urban_sdk_db)</text>
+    <rect x="521" y="182" width="90" height="46" rx="6" fill="#dbeafe" stroke="#93c5fd"/>
+    <text x="566" y="199" text-anchor="middle" font-size="10.5" font-weight="600" fill="#1e40af">links</text>
+    <text x="566" y="215" text-anchor="middle" font-size="9" fill="#374151">geom, road_name</text>
+    <rect x="621" y="182" width="90" height="46" rx="6" fill="#dbeafe" stroke="#93c5fd"/>
+    <text x="666" y="199" text-anchor="middle" font-size="10.5" font-weight="600" fill="#1e40af">speed_records</text>
+    <text x="666" y="215" text-anchor="middle" font-size="9" fill="#374151">speed, day, period</text>
+    <text x="521" y="248" font-size="10" fill="#6b7280">FK: speed_records.link_id → links.link_id</text>
+  </g>
+
+  <!-- Adminer dev tool (dashed, below storage) -->
+  <line x1="616" y1="270" x2="616" y2="308" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowDashed)"/>
+  <rect x="516" y="310" width="200" height="46" rx="8" fill="#f9fafb" stroke="#9ca3af" stroke-dasharray="4 3"/>
+  <text x="616" y="329" text-anchor="middle" font-size="11" font-weight="600" fill="#4b5563">Adminer (dev only)</text>
+  <text x="616" y="345" text-anchor="middle" font-size="9.5" fill="#6b7280">localhost:8080 — browse DB</text>
+
+  <!-- arrow 3->4 -->
+  <line x1="728" y1="180" x2="800" y2="180" stroke="#4b5563" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="764" y="170" text-anchor="middle" font-size="10" fill="#4b5563">SQLAlchemy</text>
+  <text x="764" y="182" text-anchor="middle" font-size="10" fill="#4b5563">ORM</text>
+
+  <!-- 4. API -->
+  <g>
+    <rect x="802" y="90" width="230" height="200" rx="10" fill="#fff7ed" stroke="#f97316" stroke-width="1.5"/>
+    <text x="917" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">4. API</text>
+    <text x="817" y="139" font-size="11" fill="#374151">FastAPI — app/main.py</text>
+    <text x="817" y="155" font-size="10.5" fill="#374151">localhost:8000 (async)</text>
+    <text x="817" y="179" font-size="10.5" fill="#374151">GET  /aggregates/</text>
+    <text x="817" y="195" font-size="10.5" fill="#374151">GET  /aggregates/{link_id}</text>
+    <text x="817" y="211" font-size="10.5" fill="#374151">POST /aggregates/spatial_filter/</text>
+    <text x="817" y="227" font-size="10.5" fill="#374151">GET  /patterns/slow_links/</text>
+    <text x="817" y="251" font-size="10" fill="#6b7280">day/period resolved via</text>
+    <text x="817" y="265" font-size="10" fill="#6b7280">app/params.py + constants.py</text>
+  </g>
+
+  <!-- arrow 4->5 -->
+  <line x1="1034" y1="180" x2="1096" y2="180" stroke="#4b5563" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="1065" y="170" text-anchor="middle" font-size="10" fill="#4b5563">HTTP</text>
+  <text x="1065" y="182" text-anchor="middle" font-size="10" fill="#4b5563">JSON</text>
+
+  <!-- 5. Notebook / viz -->
+  <g>
+    <rect x="1098" y="100" width="168" height="160" rx="10" fill="#fdf2f8" stroke="#ec4899" stroke-width="1.5"/>
+    <text x="1182" y="126" text-anchor="middle" font-size="13" font-weight="700" fill="#9d174d">5. Visualization</text>
+    <text x="1112" y="149" font-size="10.5" fill="#374151">notebooks/</text>
+    <text x="1112" y="163" font-size="10.5" fill="#374151">visualization.ipynb</text>
+    <text x="1112" y="187" font-size="10.5" fill="#374151">requests → GeoJSON</text>
+    <text x="1112" y="203" font-size="10.5" fill="#374151">→ mapboxgl.ChoroplethViz</text>
+    <text x="1112" y="219" font-size="10.5" fill="#374151">colored by average_speed</text>
+    <text x="1112" y="243" font-size="10" fill="#6b7280">+ pandas summary table</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(20, 420)">
+    <text x="0" y="0" font-size="12" font-weight="700" fill="#111827">Request/response, for context</text>
+    <rect x="0" y="16" width="1246" height="150" rx="10" fill="#f9fafb" stroke="#e5e7eb"/>
+    <text x="16" y="40" font-size="11" fill="#374151">Client (notebook) calls the API:</text>
+    <text x="16" y="60" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#111827">GET /aggregates/?day=Wednesday&amp;period=AM+Peak</text>
+    <text x="16" y="82" font-size="11" fill="#374151">API resolves day/period names → integer codes, joins links ⋈ speed_records,</text>
+    <text x="16" y="100" font-size="11" fill="#374151">groups by link, computes avg(speed), and serializes geometry with ST_AsGeoJSON():</text>
+    <text x="16" y="122" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#111827">[{ "link_id", "road_name", "length", "average_speed", "geometry": {...GeoJSON...} }, ...]</text>
+    <text x="16" y="146" font-size="11" fill="#6b7280">Spatial filtering (/aggregates/spatial_filter/) adds ST_Intersects() against an ST_MakeEnvelope() bbox.</text>
+  </g>
+</svg>
