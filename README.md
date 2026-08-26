@@ -91,6 +91,18 @@ as a time-of-day name (e.g. `"AM Peak"`) or numeric id 1–7 — see
 | `/aggregates/spatial_filter/` | POST | body: `day`, `period`, `bbox` | Links intersecting a `[min_lon, min_lat, max_lon, max_lat]` box |
 | `/patterns/slow_links/` | GET | `period`, `threshold`, `min_days` | Links averaging below `threshold` mph on ≥ `min_days` distinct days |
 
+## Tests
+
+Unit tests for day/period parsing, plus integration tests for all four
+endpoints run against the real, loaded database (happy paths, 400s, 404s,
+and edge cases like days/counts outside the sample dataset's range).
+Needs the stack up first (`./bin/run.sh`):
+
+```bash
+uv sync --group dev
+uv run pytest
+```
+
 ## Project layout
 
 ```
@@ -117,4 +129,7 @@ bin/
   run.sh                     Everything: setup + data + API, one command
   stop.sh                     Shuts down the API + containers
   notebook.sh                  Launches the visualization notebook
+tests/
+  test_params.py            Unit tests — day/period parsing
+  test_api.py                 Integration tests — all four endpoints
 ```

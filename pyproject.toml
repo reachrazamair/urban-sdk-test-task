@@ -30,3 +30,13 @@ notebook = [
     "nbconvert>=7.17.1",
     "python-dotenv>=1.2.3",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+# The app's DB engine is a module-level singleton bound to whatever event
+# loop is running when it's first used. pytest-asyncio's default is a fresh
+# loop per test, which breaks asyncpg connections reused across loops
+# ("another operation is in progress"). Session-scoped keeps one loop for
+# the whole run, matching the engine's lifetime.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
