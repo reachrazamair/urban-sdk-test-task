@@ -45,6 +45,7 @@ Docker.
 All the entry-point scripts live in `bin/`. Everything you need:
 
 ```bash
+./bin/setup.sh
 ./bin/run.sh
 ```
 
