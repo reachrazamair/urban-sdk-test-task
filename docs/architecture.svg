@@ -99,7 +99,7 @@
     <text x="1112" y="149" font-size="10.5" fill="#374151">notebooks/</text>
     <text x="1112" y="163" font-size="10.5" fill="#374151">visualization.ipynb</text>
     <text x="1112" y="187" font-size="10.5" fill="#374151">requests → GeoJSON</text>
-    <text x="1112" y="203" font-size="10.5" fill="#374151">→ mapboxgl.ChoroplethViz</text>
+    <text x="1112" y="203" font-size="10.5" fill="#374151">→ mapboxgl.LinestringViz</text>
     <text x="1112" y="219" font-size="10.5" fill="#374151">colored by average_speed</text>
     <text x="1112" y="243" font-size="10" fill="#6b7280">+ pandas summary table</text>
   </g>
