@@ -42,15 +42,28 @@ notebook for Mapbox visualization.
 Requires [`uv`](https://docs.astral.sh/uv/getting-started/installation/) and
 Docker.
 
+**Quickstart — one command, everything up:**
+
 ```bash
-./.setup.sh
+./run.sh
 ```
 
-This copies `.env.example` → `.env`, installs dependencies, starts
-Postgres/PostGIS, and creates the schema. Then load the data and start the
-API:
+Installs dependencies, starts Postgres/PostGIS + Adminer, creates the
+schema, loads the data (first run only — subsequent runs detect it's
+already there and skip straight to starting the API), and starts the API
+in the background. Nothing else to run. When you're done:
 
 ```bash
+./stop.sh
+```
+
+That stops the API and the containers; the loaded data is kept, so the
+next `./run.sh` comes back up in a couple of seconds.
+
+**Or step by step**, if you'd rather see what each piece does:
+
+```bash
+./.setup.sh                                # env file, deps, DB, schema
 uv run python -m app.ingestion.load_data   # downloads + loads the datasets (~2M rows)
 uv run uvicorn app.main:app --reload       # API at http://localhost:8000
 ```

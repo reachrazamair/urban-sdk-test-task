@@ -26,3 +26,6 @@ pgdata/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Runtime artifacts from run.sh
+.run/
