@@ -42,41 +42,41 @@ notebook for Mapbox visualization.
 Requires [`uv`](https://docs.astral.sh/uv/getting-started/installation/) and
 Docker.
 
-**Quickstart — one command, everything up:**
+All the entry-point scripts live in `bin/`. Everything you need:
 
 ```bash
-./run.sh
+./bin/run.sh
 ```
 
 Installs dependencies, starts Postgres/PostGIS + Adminer, creates the
 schema, loads the data (first run only — subsequent runs detect it's
 already there and skip straight to starting the API), and starts the API
-in the background. Nothing else to run. When you're done:
+in the background. Nothing else to run. Interactive API docs land at
+`http://localhost:8000/docs`.
+
+To also see the map, add a free [Mapbox token](https://mapbox.com) to
+`.env` (`MAPBOX_TOKEN=...`), then:
 
 ```bash
-./stop.sh
+./bin/notebook.sh
 ```
 
-That stops the API and the containers; the loaded data is kept, so the
-next `./run.sh` comes back up in a couple of seconds.
+That opens Jupyter Lab with the notebook ready to go — run all cells.
 
-**Or step by step**, if you'd rather see what each piece does:
+When you're done:
 
 ```bash
-./.setup.sh                                # env file, deps, DB, schema
-uv run python -m app.ingestion.load_data   # downloads + loads the datasets (~2M rows)
-uv run uvicorn app.main:app --reload       # API at http://localhost:8000
+./bin/stop.sh
 ```
 
-Interactive API docs: `http://localhost:8000/docs`.
+Stops the API and the containers; the loaded data is kept, so the next
+`./bin/run.sh` comes back up in a couple of seconds instead of reloading
+everything.
 
-To run the notebook, add a [Mapbox token](https://mapbox.com) to `.env`
-(`MAPBOX_TOKEN=...`), then:
-
-```bash
-uv sync --group notebook
-uv run jupyter lab notebooks/visualization.ipynb
-```
+`bin/setup.sh` is also there on its own if you ever just want the
+environment prepared (deps, DB, schema) without loading data or starting
+the API — `bin/run.sh` already includes everything it does, so most people
+won't need it directly.
 
 ## API reference
 
@@ -112,4 +112,9 @@ notebooks/
   visualization.ipynb    Mapbox visualization
 docs/
   architecture.svg         Architecture diagram
+bin/
+  setup.sh                  Env + deps + DB + schema, on its own
+  run.sh                     Everything: setup + data + API, one command
+  stop.sh                     Shuts down the API + containers
+  notebook.sh                  Launches the visualization notebook
 ```

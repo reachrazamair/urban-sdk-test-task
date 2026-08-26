@@ -2,13 +2,14 @@
 # One-command full startup: database, schema, data, and the API — all of it.
 # Run this and everything is up; no other command needed.
 #
-#   ./run.sh
+#   ./bin/run.sh
 #
 # Re-running it is safe: it skips steps that are already done (schema
 # creation and data loading are both no-ops if already in place), and just
-# restarts the API. To stop everything, see stop.sh.
+# restarts the API. To stop everything, see bin/stop.sh. To also browse the
+# notebook, see bin/notebook.sh.
 set -euo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 echo "==> Urban SDK traffic API — starting the full stack"
 
@@ -77,7 +78,5 @@ echo "    API           http://localhost:8000          (interactive docs at /doc
 echo "    Adminer       http://localhost:8080           (server: db, user/pass/db: urbansdk)"
 echo "    API logs      tail -f .run/api.log"
 echo ""
-echo "    Notebook (optional, needs MAPBOX_TOKEN in .env):"
-echo "      uv run jupyter lab notebooks/visualization.ipynb"
-echo ""
-echo "    To stop everything:  ./stop.sh"
+echo "    Notebook (optional, needs MAPBOX_TOKEN in .env):  ./bin/notebook.sh"
+echo "    To stop everything:                               ./bin/stop.sh"

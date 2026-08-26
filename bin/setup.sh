@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # One-shot dev environment setup: deps, database, schema.
+# For everything including the data and the API, use bin/run.sh instead —
+# this one is here for anyone who wants just the environment prepared.
 set -euo pipefail
+cd "$(dirname "$0")/.."
 
 echo "==> Urban SDK traffic API setup"
 
@@ -28,4 +31,4 @@ done
 echo "==> Initializing schema"
 uv run python -m scripts.init_db
 
-echo "==> Done. Start the API with: uv run uvicorn app.main:app --reload"
+echo "==> Done. Load the data and start the API with: ./bin/run.sh"
