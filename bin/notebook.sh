@@ -17,4 +17,4 @@ echo "==> Installing notebook dependencies"
 uv sync --group notebook >/dev/null
 
 echo "==> Launching Jupyter Lab — open notebooks/visualization.ipynb and run all cells"
-uv run jupyter lab notebooks/visualization.ipynb
+uv run jupyter lab --KernelManager.transport=ipc notebooks/visualization.ipynb
