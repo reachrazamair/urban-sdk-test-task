@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# Shuts down everything run.sh started: the API process and the Postgres/Adminer
-# containers. The database volume (loaded data) is left in place — next
-# ./bin/run.sh comes back up instantly without reloading.
+# Stops the API and containers; keeps the data volume so run.sh comes back up fast.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

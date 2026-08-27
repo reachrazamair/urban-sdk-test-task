@@ -21,14 +21,7 @@ async def get_slow_links(
     ),
     db: AsyncSession = Depends(get_db),
 ) -> list[SlowLinkItem]:
-    """Links averaging below `threshold` mph for at least `min_days` days in the period.
-
-    "Day" here means a distinct calendar date, computed from each speed
-    record's timestamp — not day_of_week — so this holds up against a full
-    multi-week dataset. Note: the sample dataset only covers a single date
-    (2024-01-01), so only min_days=1 can ever match against it; the query
-    itself is written to be correct for any date range.
-    """
+    """Links averaging below `threshold` mph on >= `min_days` distinct calendar dates."""
     period_id = resolve_period(period)
 
     day_bucket = func.date_trunc("day", SpeedRecord.timestamp)

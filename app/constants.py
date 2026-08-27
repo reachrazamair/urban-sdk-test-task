@@ -1,13 +1,6 @@
-"""Time-of-day periods and day-of-week encoding used by the source dataset.
+"""Time-of-day periods and day-of-week encoding used by the source dataset."""
 
-The speed dataset ships with precomputed `day_of_week` and `period` columns
-rather than raw timestamps alone, so we mirror that encoding here instead of
-re-deriving it per query.
-
-`day_of_week` runs Sunday=1 .. Saturday=7. This was verified against the
-sample dataset directly: its only date, 2024-01-01, is a Monday, and every
-row for that date is encoded as day_of_week=2.
-"""
+# Sunday=1..Saturday=7 — confirmed against the data: 2024-01-01 is a Monday, encoded as 2.
 
 DAY_NAME_TO_INT = {
     "sunday": 1,

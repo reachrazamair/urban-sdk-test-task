@@ -6,8 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    database_url: str = "postgresql+asyncpg://urbansdk:urbansdk@localhost:5432/urbansdk"
-    mapbox_token: str = ""
+    database_url: str
 
 
 @lru_cache

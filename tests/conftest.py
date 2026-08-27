@@ -1,7 +1,4 @@
-"""Shared fixtures. Tests hit the app in-process (ASGI transport, no socket)
-against the real Postgres/PostGIS instance — start it first with
-`./bin/run.sh` (or at least `docker compose up -d db` + a loaded dataset).
-"""
+"""Shared fixtures — tests hit the app in-process against the real, loaded database."""
 
 import pytest
 from httpx import ASGITransport, AsyncClient

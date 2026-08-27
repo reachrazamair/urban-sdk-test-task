@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
-# One-command full startup: database, schema, data, and the API — all of it.
-# Run this and everything is up; no other command needed.
-#
-#   ./bin/run.sh
-#
-# Re-running it is safe: it skips steps that are already done (schema
-# creation and data loading are both no-ops if already in place), and just
-# restarts the API. To stop everything, see bin/stop.sh. To also browse the
-# notebook, see bin/notebook.sh.
+# One-command startup: DB, schema, data, API. Safe to re-run.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

@@ -1,7 +1,4 @@
-"""Download the two source Parquet datasets and load them into Postgres/PostGIS.
-
-Idempotent: truncates both tables before loading, so it's safe to re-run.
-"""
+"""Downloads the two source datasets and loads them into Postgres/PostGIS; idempotent."""
 
 import asyncio
 import json

@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# Launches the Mapbox visualization notebook. Needs the API already running
-# (./bin/run.sh) and a free Mapbox token (https://mapbox.com) dropped into
-# .env as MAPBOX_TOKEN.
+# Launches the Mapbox visualization notebook. Needs the API running and MAPBOX_TOKEN set in .env.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

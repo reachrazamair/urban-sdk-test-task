@@ -1,10 +1,4 @@
-"""Integration tests against the real database.
-
-The sample dataset covers exactly one date — 2024-01-01, a Monday — so the
-expected counts below are pinned to that. If the loaded dataset ever
-changes, these will need updating too; that's expected for tests tied to a
-fixed data snapshot.
-"""
+"""Integration tests against the real database; counts are pinned to the sample dataset (2024-01-01, a Monday)."""
 
 import pytest
 

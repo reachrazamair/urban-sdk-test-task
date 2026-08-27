@@ -1,9 +1,4 @@
-"""Query-param resolution shared across endpoints.
-
-Accepts either human-friendly names (as shown in the assignment's example
-requests, e.g. day="Wednesday", period="AM Peak") or their numeric ids, and
-raises a 400 with a helpful message on anything else.
-"""
+"""Resolves day/period query params (names or numeric ids) into their integer ids."""
 
 from fastapi import HTTPException
 
