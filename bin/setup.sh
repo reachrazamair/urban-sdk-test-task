@@ -17,6 +17,25 @@ if ! command -v uv >/dev/null 2>&1; then
   exit 1
 fi
 
+# Auto-fall back to a free port if the configured one is already taken.
+free_port() {
+  local port=$1
+  while lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; do
+    port=$((port + 1))
+  done
+  echo "$port"
+}
+
+if ! docker ps -a --format '{{.Names}}' | grep -qx urban_sdk_db; then
+  pg_port=$(grep '^POSTGRES_PORT=' .env | cut -d= -f2 || true); pg_port=${pg_port:-5432}
+  free=$(free_port "$pg_port")
+  if [ "$free" != "$pg_port" ]; then
+    echo "==> Port $pg_port is taken, using $free for Postgres instead"
+    sed -i.bak "s/^POSTGRES_PORT=.*/POSTGRES_PORT=$free/; s#localhost:$pg_port/#localhost:$free/#" .env
+    rm -f .env.bak
+  fi
+fi
+
 echo "==> Installing Python dependencies"
 uv sync
 

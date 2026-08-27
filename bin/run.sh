@@ -23,6 +23,34 @@ if ! command -v uv >/dev/null 2>&1; then
   exit 1
 fi
 
+# Auto-fall back to a free port if the configured one is already taken.
+free_port() {
+  local port=$1
+  while lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; do
+    port=$((port + 1))
+  done
+  echo "$port"
+}
+
+if ! docker ps -a --format '{{.Names}}' | grep -qx urban_sdk_db; then
+  pg_port=$(grep '^POSTGRES_PORT=' .env | cut -d= -f2 || true); pg_port=${pg_port:-5432}
+  free=$(free_port "$pg_port")
+  if [ "$free" != "$pg_port" ]; then
+    echo "==> Port $pg_port is taken, using $free for Postgres instead"
+    sed -i.bak "s/^POSTGRES_PORT=.*/POSTGRES_PORT=$free/; s#localhost:$pg_port/#localhost:$free/#" .env
+    rm -f .env.bak
+  fi
+fi
+if ! docker ps -a --format '{{.Names}}' | grep -qx urban_sdk_adminer; then
+  ad_port=$(grep '^ADMINER_PORT=' .env | cut -d= -f2 || true); ad_port=${ad_port:-8080}
+  free=$(free_port "$ad_port")
+  if [ "$free" != "$ad_port" ]; then
+    echo "==> Port $ad_port is taken, using $free for Adminer instead"
+    sed -i.bak "s/^ADMINER_PORT=.*/ADMINER_PORT=$free/" .env
+    rm -f .env.bak
+  fi
+fi
+
 echo "==> Installing Python dependencies"
 uv sync --group notebook >/dev/null
 
@@ -72,10 +100,12 @@ else
   sleep 2
 fi
 
+ad_port=$(grep '^ADMINER_PORT=' .env | cut -d= -f2 || true); ad_port=${ad_port:-8080}
+
 echo ""
 echo "==> Everything is up:"
 echo "    API           http://localhost:8000          (interactive docs at /docs)"
-echo "    Adminer       http://localhost:8080           (server: db, user/pass/db: urbansdk)"
+echo "    Adminer       http://localhost:$ad_port           (server: db, user/pass/db: urbansdk)"
 echo "    API logs      tail -f .run/api.log"
 echo ""
 echo "    Notebook (optional, needs MAPBOX_TOKEN in .env):  ./bin/notebook.sh"
